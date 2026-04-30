@@ -1,0 +1,29 @@
+# Dependencias para el Comparador Semántico de Documentos
+# Basado en el documento_investigador.md y el plan de tareas
+
+# Interfaz Visual
+streamlit>=1.30.0
+
+# Procesamiento de PDF (PyMuPDF recomendado por el investigador)
+PyMuPDF>=1.23.0
+
+# Extracción de palabras clave (YAKE recomendado)
+yake>=0.1.8
+
+# Similitud Semántica (Sentence-Transformers mencionado en el investigador)
+sentence-transformers>=2.2.0
+
+# Visualización y Diagrama de Venn
+matplotlib>=3.8.0
+matplotlib-venn>=0.11.7
+
+# Integración LLM (OpenAI API mencionado en el investigador)
+openai>=1.0.0
+
+# Extracción de URLs y parseo HTML
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+
+# Utilidades
+numpy>=1.24.0
+pandas>=2.0.0
