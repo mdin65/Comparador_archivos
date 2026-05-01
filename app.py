@@ -161,7 +161,7 @@ if st.button("🔍 Comparar Documentos", type="primary", use_container_width=Tru
                 
                 with st.spinner("Procesando documentos..."):
                     # Procesar Fuente A
-                    st.markdown("Procesando Fuente A...")
+                    st.markdown("#### Procesando Fuente A...")
                     if tipo_a == "PDF":
                         # Guardar el archivo subido temporalmente
                         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
@@ -266,7 +266,7 @@ if st.button("🔍 Comparar Documentos", type="primary", use_container_width=Tru
                             st.markdown("**Solo en B:**")
                             st.write(", ".join(stats['solo_en_b'][:10]) or "Ninguna")
                         # ── Análisis de gemini ─────────────────────────
-                    st.markdown(" Análisis Semántico (Gemini)")
+                    st.markdown("###  Análisis Semántico (Gemini)")
 
                     if os.environ.get("GEMINI_API_KEY"):
                         try:
