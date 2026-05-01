@@ -159,9 +159,9 @@ if st.button("🔍 Comparar Documentos", type="primary", use_container_width=Tru
                     extraer_palabras_frecuentes,
                 )
                 
-                with st.spinner("⏳ Procesando documentos..."):
+                with st.spinner("Procesando documentos..."):
                     # Procesar Fuente A
-                    st.markdown("#### Procesando Fuente A...")
+                    st.markdown("Procesando Fuente A...")
                     if tipo_a == "PDF":
                         # Guardar el archivo subido temporalmente
                         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
@@ -174,7 +174,7 @@ if st.button("🔍 Comparar Documentos", type="primary", use_container_width=Tru
                     else:
                         doc_a = procesar_fuente("URL", url=url_a)
                     
-                    st.success(f"✅ Fuente A procesada: {doc_a['total_caracteres']:,} caracteres")
+                    st.success(f"Fuente A procesada: {doc_a['total_caracteres']:,} caracteres")
                     
                     # Procesar Fuente B
                     st.markdown("#### Procesando Fuente B...")
@@ -188,7 +188,7 @@ if st.button("🔍 Comparar Documentos", type="primary", use_container_width=Tru
                     else:
                         doc_b = procesar_fuente("URL", url=url_b)
                     
-                    st.success(f"✅ Fuente B procesada: {doc_b['total_caracteres']:,} caracteres")
+                    st.success(f"Fuente B procesada: {doc_b['total_caracteres']:,} caracteres")
                     
                     # Extraer keywords con YAKE
                     st.markdown("#### Extrayendo palabras clave y analizando texto...")
@@ -205,7 +205,7 @@ if st.button("🔍 Comparar Documentos", type="primary", use_container_width=Tru
                     jaccard_frec = len(frec_comunes) / len(frec_union) if frec_union else 0.0
 
                     st.info(
-                        f"📝 Palabras únicas — A: {len(unicas_a):,}, B: {len(unicas_b):,} | "
+                        f"Palabras únicas — A: {len(unicas_a):,}, B: {len(unicas_b):,} | "
                         f"Frecuentes — A: {len(frec_a)}, B: {len(frec_b)}, Comunes: {len(frec_comunes)}"
                     )
 
@@ -266,7 +266,7 @@ if st.button("🔍 Comparar Documentos", type="primary", use_container_width=Tru
                             st.markdown("**Solo en B:**")
                             st.write(", ".join(stats['solo_en_b'][:10]) or "Ninguna")
                         # ── Análisis de gemini ─────────────────────────
-                    st.markdown("###s Análisis Semántico (Gemini)")
+                    st.markdown(" Análisis Semántico (Gemini)")
 
                     if os.environ.get("GEMINI_API_KEY"):
                         try:
