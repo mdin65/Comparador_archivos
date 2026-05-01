@@ -28,7 +28,7 @@ Genera un nuevo archivo en el proyecto denominado .env, en este deberás agregar
         GEMINI_API_KEY="LLAVE_DE_GEMINI"
 
 4. Modelo de IA:
-Una vez generada la llave, el modelo de gemini se puede visualizar por medio de "test_gemini.py". Aparecerá un listado, reemplaza el modelo por el que tengas a disposición.
+Una vez generada la llave, comparator.py necesitará el modelo a utilizar. Para saber cual modelo tienes o utilizarás puedes ejecutar "test_gemini.py". Aparecerá un listado, reemplaza el modelo a libre disposición.
 
 5. Ejecuta la aplicación:
 Una vez instaladas las dependencias, y definidos los parámetros de la IA levanta el servidor local de Streamlit con el siguiente comando:
