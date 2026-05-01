@@ -8,6 +8,7 @@ Este proyecto tiene como propósito principal comparar el contenido de archivos 
 - **Comparación Visual:** Generación de un **Diagrama de Venn** al finalizar el proceso, lo que permite observar gráficamente las similitudes y diferencias entre los textos analizados.
 - **Resumen Descriptivo:** El análisis visual es acompañado por un breve informe de texto que concluye si los documentos tratan de lo mismo o si su contenido es parecido.
 - **Interfaz Web Interactiva:** Construido utilizando Streamlit para una experiencia fluida.
+- **Analisis de IA**: Análisis de gemini considerando el contexto de ambos textos, genera una comparación y una conclusión
 
 ## Instalación y Ejecución
 
@@ -21,8 +22,16 @@ Para correr este proyecto en tu máquina local, sigue estos pasos:
 2. Instala las dependencias:
 Asegúrate de tener Python instalado. Luego, instala los paquetes necesarios ejecutando:
         pip install -r requirements.txt
-3. Ejecuta la aplicación:
-Una vez instaladas las dependencias, levanta el servidor local de Streamlit con el siguiente comando:
-    streamlit run app.py
+
+3. Generar ambiente de llave:
+Genera un nuevo archivo en el proyecto denominado .env, en este deberás agregar la siguiente linea reemplazando el interior de las comillas por la llave real de gemini:
+        GEMINI_API_KEY="LLAVE_DE_GEMINI"
+
+4. Modelo de IA:
+Una vez generada la llave, el modelo de gemini se puede visualizar por medio de "test_gemini.py". Aparecerá un listado, reemplaza el modelo por el que tengas a disposición.
+
+5. Ejecuta la aplicación:
+Una vez instaladas las dependencias, y definidos los parámetros de la IA levanta el servidor local de Streamlit con el siguiente comando:
+        streamlit run app.py
 
     
