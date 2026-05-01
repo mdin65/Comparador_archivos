@@ -119,22 +119,6 @@ def comparar_palabras_clave(
     }
 
 
-def generar_datos_venn(
-    palabras_a: set[str],
-    palabras_b: set[str],
-) -> dict:
-    interseccion = palabras_a & palabras_b
-    solo_a = palabras_a - palabras_b
-    solo_b = palabras_b - palabras_a
-    
-    return {
-        "subset_a": len(solo_a),
-        "subset_b": len(solo_b),
-        "subset_ab": len(interseccion),
-        "palabras_a": sorted(solo_a)[:5], 
-        "palabras_b": sorted(solo_b)[:5],
-        "palabras_comunes": sorted(interseccion)[:5],
-    }
 
 def extraer_palabras_frecuentes(
     texto: str,
@@ -312,61 +296,44 @@ def generar_venn(
 
     return imagen_bytes
 
-
-def analizar_con_openai(
+def analizar_con_gemini(
     texto_a: str,
     texto_b: str,
     nombre_a: str,
     nombre_b: str,
-    api_key: Optional[str] = None,
-    model: str = "gpt-4-turbo-preview",
+    model: str = "gemini-2.5-flash",
     max_chars: int = 8000,
 ) -> dict:
     """
-    Usa OpenAI API para comparar semánticamente dos textos.
-    
-    Args:
-        texto_a: Texto del primer documento.
-        texto_b: Texto del segundo documento.
-        nombre_a: Nombre del primer documento.
-        nombre_b: Nombre del segundo documento.
-        api_key: API key de OpenAI. Si es None, usa OPENAI_API_KEY del entorno.
-        model: Modelo de OpenAI a usar.
-        max_chars: Máximo de caracteres por texto.
-        
-    Returns:
-        Diccionario con el análisis estructurado.
-        
-    Raises:
-        ImportError: Si openai no está instalado.
-        ValueError: Si no se puede obtener la API key.
+    Usa Gemini API para describir y comparar semánticamente dos textos.
+    La API key se lee automáticamente desde la variable de entorno GEMINI_API_KEY.
     """
     try:
-        from openai import OpenAI
+        import google.generativeai as genai
     except ImportError:
-        raise ImportError(
-            "OpenAI no está instalado. Instale con: pip install openai"
-        )
-    
+        raise ImportError("Instale con: pip install google-generativeai")
+
     import os
     import json
-    
-    # Obtener API key
-    key = api_key or os.environ.get("OPENAI_API_KEY")
-    if not key:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+    api_key = os.environ.get("GEMINI_API_KEY")
+
+    if not api_key:
         raise ValueError(
-            "Se requiere una API key de OpenAI. "
-            "Defínala con la variable de entorno OPENAI_API_KEY "
-            "o pásala como argumento api_key."
+            "No se encontró GEMINI_API_KEY. "
+            "Defínala en el archivo .env en la raíz del proyecto."
         )
-    
-    # Truncar textos si son muy largos
+
+    genai.configure(api_key=api_key)
+    modelo = genai.GenerativeModel(model)
+
     limite = max_chars // 2
     texto_a_recortado = texto_a[:limite] + ("..." if len(texto_a) > limite else "")
     texto_b_recortado = texto_b[:limite] + ("..." if len(texto_b) > limite else "")
-    
-    # Construir prompt
-    prompt = f"""Eres un analista experto en comparación de documentos. 
+
+    prompt = f"""Eres un analista experto en comparación de documentos.
 Analiza los siguientes dos documentos y proporciona una comparación detallada.
 
 DOCUMENTO A: "{nombre_a}"
@@ -379,46 +346,34 @@ DOCUMENTO B: "{nombre_b}"
 {texto_b_recortado}
 ---
 
-Responde ÚNICAMENTE con un objeto JSON válido (sin markdown, sin explicaciones fuera del JSON) 
+Responde ÚNICAMENTE con un objeto JSON válido (sin markdown, sin backticks, sin texto fuera del JSON)
 con exactamente esta estructura:
 
 {{
-  "resumen_general": "Descripción breve de ambos documentos en 2-3 oraciones",
-  "similitudes": ["similitud 1", "similitud 2", "..."],
-  "diferencias": ["diferencia 1", "diferencia 2", "..."],
-  "temas_exclusivos_a": ["tema solo en doc A", "..."],
-  "temas_exclusivos_b": ["tema solo en doc B", "..."],
-  "temas_comunes": ["tema compartido 1", "..."],
+  "resumen_a": "De qué trata el documento A en 2-3 oraciones",
+  "resumen_b": "De qué trata el documento B en 2-3 oraciones",
+  "similitudes": ["similitud 1", "similitud 2"],
+  "diferencias": ["diferencia 1", "diferencia 2"],
+  "temas_exclusivos_a": ["tema solo en A"],
+  "temas_exclusivos_b": ["tema solo en B"],
+  "temas_comunes": ["tema compartido"],
   "puntuacion_similitud": 0.75,
   "conclusion": "Conclusión final sobre la relación entre los documentos"
 }}
 
-La puntuacion_similitud debe ser un número entre 0.0 (completamente diferentes) 
-y 1.0 (idénticos en contenido).
+La puntuacion_similitud debe ser un número entre 0.0 y 1.0.
 """
-    
-    # Llamar a OpenAI API
-    client = OpenAI(api_key=key)
-    
-    response = client.chat.completions.create(
-        model=model,
-        response_format={"type": "json_object"},
-        messages=[
-            {"role": "system", "content": "Eres un analista experto en documentos. Responde solo con JSON válido."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.3,
-    )
-    
-    # Procesar respuesta
-    respuesta_texto = response.choices[0].message.content.strip()
-    
+
+    respuesta = modelo.generate_content(prompt)
+    texto_respuesta = respuesta.text.strip()
+
+    # Limpiar posibles backticks que Gemini a veces incluye
+    texto_respuesta = texto_respuesta.replace("```json", "").replace("```", "").strip()
+
     try:
-        datos = json.loads(respuesta_texto)
+        return json.loads(texto_respuesta)
     except json.JSONDecodeError as e:
         raise ValueError(
-            f"La API devolvió una respuesta no parseable como JSON: {e}\n"
-            f"Respuesta cruda:\n{respuesta_texto[:500]}"
+            f"Gemini devolvió una respuesta no parseable: {e}\n{texto_respuesta[:300]}"
         )
-    
-    return datos
+

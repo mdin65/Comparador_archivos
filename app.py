@@ -1,6 +1,10 @@
+import os
 import streamlit as st
 from pathlib import Path
 import tempfile
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configuración de la página
 st.set_page_config(
@@ -261,12 +265,70 @@ if st.button("🔍 Comparar Documentos", type="primary", use_container_width=Tru
                         with col_c:
                             st.markdown("**Solo en B:**")
                             st.write(", ".join(stats['solo_en_b'][:10]) or "Ninguna")
-                    
+                        # ── Análisis de gemini ─────────────────────────
+                    st.markdown("###s Análisis Semántico (Gemini)")
+
+                    if os.environ.get("GEMINI_API_KEY"):
+                        try:
+                            with st.spinner("Analizando contenido con Gemini...Esto puede tardar unos segundos..."):
+                                from comparator import analizar_con_gemini
+                                analisis = analizar_con_gemini(
+                                    doc_a['texto_limpio'],
+                                    doc_b['texto_limpio'],
+                                    doc_a['nombre'],
+                                    doc_b['nombre'],
+                                )
+
+                            # Resúmenes temáticos
+                            st.markdown("#### ¿De qué tratan los documentos?")
+                            col_ra, col_rb = st.columns(2)
+                            with col_ra:
+                                st.info(f"**Documento A**\n\n{analisis.get('resumen_a', 'Sin resumen')}")
+                            with col_rb:
+                                st.info(f"**Documento B**\n\n{analisis.get('resumen_b', 'Sin resumen')}")
+
+                            # Puntuación semántica
+                            puntuacion = float(analisis.get('puntuacion_similitud', 0))
+                            st.metric("Similitud semántica (Gemini)", f"{puntuacion:.0%}")
+                            st.progress(puntuacion)
+
+                            # Temas detallados
+                            with st.expander("📚 Ver temas y comparación detallada"):
+                                col1, col2, col3 = st.columns(3)
+                                with col1:
+                                    st.markdown("**Solo en A:**")
+                                    for t in analisis.get('temas_exclusivos_a', []):
+                                        st.write(f"• {t}")
+                                with col2:
+                                    st.markdown("**En común:**")
+                                    for t in analisis.get('temas_comunes', []):
+                                        st.write(f"• {t}")
+                                with col3:
+                                    st.markdown("**Solo en B:**")
+                                    for t in analisis.get('temas_exclusivos_b', []):
+                                        st.write(f"• {t}")
+
+                                st.markdown("**Similitudes:**")
+                                for s in analisis.get('similitudes', []):
+                                    st.write(f"* {s}")
+
+                                st.markdown("**Diferencias:**")
+                                for d in analisis.get('diferencias', []):
+                                    st.write(f"- {d}")
+
+                            # Conclusión final
+                            st.markdown("#### 💬 Conclusión")
+                            st.success(analisis.get('conclusion', ''))
+
+                        except Exception as e:
+                            st.error(f" Error al consultar Gemini: {e}")
+                    else:
+                        st.warning("⚠️ Configura GEMINI_API_KEY en el archivo .env para activar esta sección.")
             except ImportError as e:
-                st.error(f"❌ Error de importación: {e}")
+                st.error(f"Error de importación: {e}")
                 st.info("Asegúrese de haber instalado todas las dependencias: pip install -r requirements.txt")
             except Exception as e:
-                st.error(f"❌ Error durante el procesamiento: {e}")
+                st.error(f" Error durante el procesamiento: {e}")
                 st.exception(e)
 
 # Información en el sidebar
@@ -281,5 +343,12 @@ with st.sidebar:
     - OpenAI API (Análisis)
     - Matplotlib-Venn (Visualización)
     """)
+     # Verificar si la API key está configurada en .env
+    gemini_configurado = bool(os.environ.get("GEMINI_API_KEY"))
+    if gemini_configurado:
+        st.success("Gemini API configurada")
+    else:
+        st.error("GEMINI_API_KEY no encontrada en .env")
+        st.code("GEMINI_API_KEY=AIza_tu_clave", language="bash")
     st.markdown("---")
     st.caption("Yasmin Hernández- Sistemas Inteligentes - 2026")

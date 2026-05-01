@@ -10,15 +10,13 @@ PyMuPDF>=1.23.0
 # Extracción de palabras clave (YAKE recomendado)
 yake>=0.1.8
 
-# Similitud Semántica (Sentence-Transformers mencionado en el investigador)
-sentence-transformers>=2.2.0
-
 # Visualización y Diagrama de Venn
 matplotlib>=3.8.0
 matplotlib-venn>=0.11.7
 
 # Integración LLM (OpenAI API mencionado en el investigador)
-openai>=1.0.0
+google-generativeai>=0.8.0
+python-dotenv>=1.0.0
 
 # Extracción de URLs y parseo HTML
 requests>=2.31.0
