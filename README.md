@@ -16,21 +16,23 @@ Para correr este proyecto en tu máquina local, sigue estos pasos:
 
 1. **Clona el repositorio** (opcional si ya tienes el código localmente):
    ```bash
-   git clone [https://github.com/tu_usuario/nombre_del_repositorio.git](https://github.com/tu_usuario/nombre_del_repositorio.git)
-   cd nombre_del_repositorio
+   git clone https://github.com/mdin65/Comparador_archivos.git
+   cd Comparador_archivos
 
 2. Instala las dependencias:
 Asegúrate de tener Python instalado. Luego, instala los paquetes necesarios ejecutando:
+
         pip install -r requirements.txt
 
-3. Generar ambiente de llave:
+4. Generar ambiente de llave:
 Genera un nuevo archivo en el proyecto denominado .env, en este deberás agregar la siguiente linea reemplazando el interior de las comillas por la llave real de gemini:
+
         GEMINI_API_KEY="LLAVE_DE_GEMINI"
 
-4. Modelo de IA:
+6. Modelo de IA:
 Una vez generada la llave, comparator.py necesitará el modelo a utilizar. Para saber cual modelo tienes o utilizarás puedes ejecutar "test_gemini.py". Aparecerá un listado, reemplaza el modelo a libre disposición.
 
-5. Ejecuta la aplicación:
+7. Ejecuta la aplicación:
 Una vez instaladas las dependencias, y definidos los parámetros de la IA levanta el servidor local de Streamlit con el siguiente comando:
         streamlit run app.py
 
