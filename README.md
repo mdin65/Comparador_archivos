@@ -34,6 +34,7 @@ Una vez generada la llave, comparator.py necesitará el modelo a utilizar. Para 
 
 7. Ejecuta la aplicación:
 Una vez instaladas las dependencias, y definidos los parámetros de la IA levanta el servidor local de Streamlit con el siguiente comando:
-        streamlit run app.py
+```bash
+   streamlit run app.py
 
     
